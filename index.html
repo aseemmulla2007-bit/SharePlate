@@ -1,0 +1,274 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SharePlate - Event Surplus Food Redistribution</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes floatAnim {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-float {
+            animation: floatAnim 4s ease-in-out infinite;
+        }
+        .animate-glow {
+            animation: pulseGlow 2.5s infinite;
+        }
+        .card-hover {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+        /* Custom smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer group" onclick="switchTab('explore')">
+                <div class="w-11 h-11 bg-brand-500 rounded-2xl flex items-center justify-center text-white shadow-md shadow-brand-500/20 transform group-hover:rotate-12 transition duration-300">
+                    <i class="fa-solid fa-utensils text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-bold tracking-tight text-slate-900">Share<span class="text-brand-600">Plate</span></span>
+                    <span class="block text-xs font-medium text-slate-500">Bridging Events & Shelters</span>
+                </div>
+            </div>
+            
+            <nav class="hidden md:flex items-center space-x-1">
+                <button onclick="switchTab('explore')" id="nav-explore" class="px-4 py-2 rounded-xl text-sm font-semibold text-brand-600 bg-brand-50 transition transform hover:scale-105">
+                    <i class="fa-solid fa-bowl-food mr-2"></i>Available Food
+                </button>
+                <button onclick="switchTab('donate')" id="nav-donate" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition transform hover:scale-105">
+                    <i class="fa-solid fa-hand-holding-heart mr-2"></i>Donate Food
+                </button>
+                <button onclick="switchTab('shelter')" id="nav-shelter" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition transform hover:scale-105">
+                    <i class="fa-solid fa-house-chimney-user mr-2"></i>Shelter / NGO Register
+                </button>
+                <button onclick="switchTab('impact')" id="nav-impact" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition transform hover:scale-105">
+                    <i class="fa-solid fa-chart-line mr-2"></i>Live Impact
+                </button>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="switchTab('donate')" class="bg-brand-600 hover:bg-brand-700 text-white font-medium px-5 py-2.5 rounded-xl shadow-lg shadow-brand-600/20 hover:shadow-brand-600/30 transition transform hover:-translate-y-0.5 active:translate-y-0 text-sm flex items-center animate-glow">
+                    <i class="fa-solid fa-plus-circle mr-2"></i>Post Surplus Food
+                </button>
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl text-slate-600 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1 transition-all duration-300">
+            <button onclick="switchTab('explore'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 transition">
+                <i class="fa-solid fa-bowl-food mr-2"></i>Available Food
+            </button>
+            <button onclick="switchTab('donate'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 transition">
+                <i class="fa-solid fa-hand-holding-heart mr-2"></i>Donate Food
+            </button>
+            <button onclick="switchTab('shelter'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 transition">
+                <i class="fa-solid fa-house-chimney-user mr-2"></i>Shelter / NGO Register
+            </button>
+            <button onclick="switchTab('impact'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 transition">
+                <i class="fa-solid fa-chart-line mr-2"></i>Live Impact
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- TAB 1: EXPLORE AVAILABLE SURPLUS FOOD -->
+        <section id="view-explore" class="space-y-6 animate-fade-in">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 text-white p-8 md:p-12 shadow-2xl">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl animate-float">
+                    <i class="fa-solid fa-bowl-food"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl space-y-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 animate-pulse">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span> Real-time Event Recovery
+                    </span>
+                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+                        Turn Event Surplus Into Nourishing Meals.
+                    </h1>
+                    <p class="text-emerald-100 text-base md:text-lg font-light leading-relaxed">
+                        Weddings, parties, and banquets generate excess cooked food. Connect instantly with local orphanages, old-age homes, and shelters before it goes to waste.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-4">
+                        <button onclick="switchTab('donate')" class="bg-white text-emerald-900 font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-emerald-50 transition transform hover:-translate-y-1 duration-200">
+                            <i class="fa-solid fa-utensils mr-2 text-brand-600"></i>List Surplus Food Now
+                        </button>
+                        <button onclick="switchTab('shelter')" class="bg-emerald-700/60 border border-emerald-500/40 text-white font-semibold px-6 py-3 rounded-xl hover:bg-emerald-700 transition transform hover:-translate-y-1 duration-200">
+                            <i class="fa-solid fa-house-chimney-user mr-2"></i>Register as Shelter / NGO
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & Search -->
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-slate-200 transition-all duration-300 hover:shadow-md">
+                <div class="relative w-full md:w-96">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="text" id="search-input" oninput="filterListings()" placeholder="Search by location, dish or event name..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition-all duration-200">
+                </div>
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <select id="filter-type" onchange="filterListings()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all duration-200 cursor-pointer">
+                        <option value="all">All Dietary Types</option>
+                        <option value="Veg">Pure Veg</option>
+                        <option value="Non-Veg">Non-Veg</option>
+                        <option value="Both">Both Veg & Non-Veg</option>
+                    </select>
+                    <button onclick="resetFilters()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50 transition transform hover:scale-105 active:scale-95">
+                        <i class="fa-solid fa-rotate-right mr-1.5"></i>Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Listings Grid -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-slate-900">Active Surplus Food Available</h2>
+                    <span id="listing-count" class="text-xs font-semibold px-3 py-1 bg-brand-50 text-brand-700 rounded-full animate-pulse">0 Listings Active</span>
+                </div>
+                <div id="listings-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic listings injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: DONATE SURPLUS FOOD FORM -->
+        <section id="view-donate" class="hidden max-w-3xl mx-auto space-y-6 animate-fade-in">
+            <div class="bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-slate-200 transition-all duration-300">
+                <div class="text-center max-w-xl mx-auto mb-8">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-brand-50 text-brand-600 border border-brand-200">Event Host Portal</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">Post Surplus Event Food</h2>
+                    <p class="text-slate-500 text-sm mt-1">Fill out the details below so nearby orphanages, old-age homes, and verified shelters can claim and collect the food promptly.</p>
+                </div>
+
+                <form id="donation-form" onsubmit="handleDonationSubmit(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Event / Host Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="host-name" required placeholder="e.g., Sharma Wedding Reception / Grand Banquets" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Contact Person Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="contact-name" required placeholder="e.g., Rajesh Sharma" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Phone Number (For Coordination) <span class="text-red-500">*</span></label>
+                            <input type="tel" id="contact-phone" required placeholder="e.g., +91 98765 43210" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Dietary Type <span class="text-red-500">*</span></label>
+                            <select id="food-type" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm bg-white transition cursor-pointer">
+                                <option value="Veg">Pure Vegetarian</option>
+                                <option value="Non-Veg">Non-Vegetarian</option>
+                                <option value="Both">Both Veg & Non-Veg Available</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Estimated Servings / Plates Left <span class="text-red-500">*</span></label>
+                            <input type="number" id="plates-count" min="5" required placeholder="e.g., 75" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Time Window for Pickup <span class="text-red-500">*</span></label>
+                            <input type="text" id="pickup-time" required placeholder="e.g., Today, 10:30 PM - 12:00 AM" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Event Location / Address <span class="text-red-500">*</span></label>
+                        <input type="text" id="location" required placeholder="e.g., Royal Palm Lawn, MG Road, Sector 21" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Food Items Description <span class="text-red-500">*</span></label>
+                        <textarea id="food-items" rows="3" required placeholder="e.g., Dal Makhani, Paneer Tikka, Veg Biryani, Fresh Roti & Gulab Jamun (Packed in hygienic containers)" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-sm transition"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Food Photo (Select Unsplash Preset or Custom URL)</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+                            <div onclick="selectPresetImage(this, 'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=600&q=80')" class="preset-img-card cursor-pointer border-2 border-brand-500 rounded-xl overflow-hidden shadow-sm relative transform hover:scale-105 transition duration-200">
+                                <img src="https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=300&q=80" alt="Catering" class="w-full h-24 object-cover">
+                                <div class="absolute inset-0 bg-brand-500/20 flex items-center justify-center text-white font-bold opacity-0 hover:opacity-100 transition"><i class="fa-solid fa-check"></i></div>
+                            </div>
+                            <div onclick="selectPresetImage(this, 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80')" class="preset-img-card cursor-pointer border-2 border-transparent rounded-xl overflow-hidden shadow-sm relative transform hover:scale-105 transition duration-200">
+                                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80" alt="Buffet" class="w-full h-24 object-cover">
+                                <div class="absolute inset-0 bg-brand-500/20 flex items-center justify-center text-white font-bold opacity-0 hover:opacity-100 transition"><i class="fa-solid fa-check"></i></div>
+                            </div>
+                            <div onclick="selectPresetImage(this, 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=600&q=80')" class="preset-img-card cursor-pointer border-2 border-transparent rounded-xl overflow-hidden shadow-sm relative transform hover:scale-105 transition duration-200">
+                                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=300&q=80" alt="Feast" class="w-full h-24 object-cover">
+                                <div class="absolute inset-0 bg-brand-500/20 flex items-center justify-center text-white font-bold opacity-0 hover:opacity-100 transition"><i class="fa-solid fa-check"></i></div>
+                            </div>
+                            <div onclick="selectPresetImage(this, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80')" class="preset-img-card curs
